@@ -1,18 +1,26 @@
 package modelo;
 
 import interfaces.IMensaje;
-
-import java.security.PublicKey;
-import modelo.CryptoUtil;
+import java.util.List;
 
 public class Mensaje implements IMensaje {
+    private String contenido;
+    private byte[] contenidoCifrado;
+    private byte[] origenOfuscado;
+    private List<byte[]> capasCifradas;
 
-    private final byte[] contenidoCifrado;
-    private final byte[] origenOfuscado;
+    public Mensaje(String contenido) {
+        this.contenido = contenido;
+    }
 
-    public Mensaje(String textoPlano, PublicKey clavePublicaDestino, byte[] origenOfuscado) throws Exception {
-        this.contenidoCifrado = CryptoUtil.cifrar(textoPlano.getBytes(), clavePublicaDestino);
-        this.origenOfuscado = origenOfuscado;
+    @Override
+    public String getContenido() {
+        return contenido;
+    }
+
+    @Override
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
     }
 
     @Override
@@ -21,7 +29,27 @@ public class Mensaje implements IMensaje {
     }
 
     @Override
+    public void setContenidoCifrado(byte[] contenidoCifrado) {
+        this.contenidoCifrado = contenidoCifrado;
+    }
+
+    @Override
     public byte[] getOrigenOfuscado() {
         return origenOfuscado;
+    }
+
+    @Override
+    public void setOrigenOfuscado(byte[] origenOfuscado) {
+        this.origenOfuscado = origenOfuscado;
+    }
+
+    @Override
+    public List<byte[]> getCapasCifradas() {
+        return capasCifradas;
+    }
+
+    @Override
+    public void setCapasCifradas(List<byte[]> capasCifradas) {
+        this.capasCifradas = capasCifradas;
     }
 }
