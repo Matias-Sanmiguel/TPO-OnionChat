@@ -1,8 +1,10 @@
 package modelo;
 
+import interfaces.IGrafo;
+
 import java.util.*;
 
-public class Grafo {
+public class Grafo implements IGrafo {
     private Map<String, List<Arista>> adyacentes = new HashMap<>();
 
     public void agregarNodo(String nodo) {

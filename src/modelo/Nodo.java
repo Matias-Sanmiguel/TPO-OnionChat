@@ -1,7 +1,6 @@
 package modelo;
 
 import interfaces.*;
-import modelo.CryptoUtil;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -15,12 +14,15 @@ public class Nodo implements INodo {
     private final PrivateKey clavePrivada;
     private final List<INodo> vecinos;
     private final Map<String, IConversacionLocal> conversaciones;
+    private final ICryptoUtil cryptoUtil;
 
     public Nodo(String id) throws Exception {
         this.id = id;
         this.vecinos = new ArrayList<>();
         this.conversaciones = new HashMap<>();
-        KeyPair pair = CryptoUtil.generarParDeClaves();
+        this.cryptoUtil = new CryptoUtil(); // ✅ Usamos la interfaz
+
+        KeyPair pair = cryptoUtil.generarParDeClaves();
         this.clavePublica = pair.getPublic();
         this.clavePrivada = pair.getPrivate();
     }
@@ -52,18 +54,21 @@ public class Nodo implements INodo {
 
     @Override
     public void enviarMensaje(IMensaje mensaje) throws Exception {
-        recibirMensaje(mensaje); // Simplemente pasa al recibir
+        recibirMensaje(mensaje);
     }
 
     @Override
     public void recibirMensaje(IMensaje mensaje) throws Exception {
         try {
-            String contenido = new String(CryptoUtil.descifrar(mensaje.getContenidoCifrado(), this.clavePrivada));
+            byte[] mensajePlano = cryptoUtil.descifrar(mensaje.getContenidoCifrado(), this.clavePrivada);
+            String contenido = new String(mensajePlano);
+
             System.out.println("[" + id + "] Mensaje recibido: " + contenido);
 
             String origenID = Base64.getEncoder().encodeToString(mensaje.getOrigenOfuscado());
             IConversacionLocal conversacion = conversaciones.computeIfAbsent(origenID, k -> new ConversacionLocal(origenID));
             conversacion.guardarMensaje(mensaje);
+
         } catch (Exception e) {
             if (!vecinos.isEmpty()) {
                 INodo siguiente = vecinos.get(new Random().nextInt(vecinos.size()));

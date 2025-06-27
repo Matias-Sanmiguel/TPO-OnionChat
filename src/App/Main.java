@@ -1,62 +1,52 @@
 package App;
 
+import interfaces.IGrafo;
+import interfaces.ICryptoUtil;
+import interfaces.IMensaje;
 import modelo.CryptoUtil;
 import modelo.Grafo;
 import modelo.Mensaje;
 
-import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        Grafo grafo = new Grafo();
         Scanner scanner = new Scanner(System.in);
         Random rand = new Random();
 
-        // 1. Seleccionar cantidad de nodos
-        System.out.print("Ingrese la cantidad de nodos: ");
-        int cantidadNodos = scanner.nextInt();
-        scanner.nextLine();
+        // --- Interfaces TDA ---
+        IGrafo grafo = new Grafo();
+        ICryptoUtil cryptoUtil = new CryptoUtil();
 
-        if (cantidadNodos < 2) {
-            System.out.println("Debe haber al menos 2 nodos.");
-            return;
-        }
-
-        // 2. Generar nodos automáticamente
-        List<String> nodos = new ArrayList<>();
-        for (int i = 0; i < cantidadNodos; i++) {
-            nodos.add(convertirIndiceANombre(i)); // A, B, C, ...
-        }
+        // --- 1. Generar nodos ---
+        List<String> nodos = generarNombresDeNodos(scanner);
+        if (nodos.isEmpty()) return;
 
         System.out.println("Nodos generados: " + nodos);
+        for (String nodo : nodos) grafo.agregarNodo(nodo);
 
-        for (String nodo : nodos) {
-            grafo.agregarNodo(nodo);
-        }
-
-        // 3. Generar conexiones aleatorias entre nodos
-        int maxAristas = cantidadNodos * (cantidadNodos - 1);
-        int minAristas = cantidadNodos;
+        // --- 2. Agregar aristas aleatorias ---
+        int n = nodos.size();
+        int maxAristas = n * (n - 1);
+        int minAristas = n;
         int cantidadAristas = minAristas + rand.nextInt(maxAristas - minAristas + 1);
+
         Set<String> aristasUsadas = new HashSet<>();
-
         while (aristasUsadas.size() < cantidadAristas) {
-            String origen = nodos.get(rand.nextInt(cantidadNodos));
-            String destino = nodos.get(rand.nextInt(cantidadNodos));
+            String origen = nodos.get(rand.nextInt(n));
+            String destino = nodos.get(rand.nextInt(n));
             if (origen.equals(destino)) continue;
-
             String clave = origen + "->" + destino;
             if (aristasUsadas.contains(clave)) continue;
-
             int peso = 1 + rand.nextInt(9);
             grafo.agregarArista(origen, destino, peso);
             aristasUsadas.add(clave);
         }
 
-        // 4. Pedir nodo origen y destino
+        // --- 3. Ingreso de nodos origen y destino ---
         String origen, destino;
         do {
             System.out.print("Ingrese el nodo origen: ");
@@ -68,22 +58,26 @@ public class Main {
             destino = scanner.nextLine().trim();
         } while (!nodos.contains(destino) || destino.equals(origen));
 
-        // 5. Ingreso del mensaje
+        // --- 4. Ingreso del mensaje ---
         System.out.print("Escriba el mensaje a enviar: ");
-        String texto = scanner.nextLine();
+        String textoPlano = scanner.nextLine();
 
         try {
-            // 6. Claves
-            KeyPair clavesOrigen = CryptoUtil.generarParDeClaves();
-            KeyPair clavesDestino = CryptoUtil.generarParDeClaves();
-
-            // 7. Cifrado
+            // --- 5. Generar claves ---
+            KeyPair clavesOrigen = cryptoUtil.generarParDeClaves();
+            KeyPair clavesDestino = cryptoUtil.generarParDeClaves();
             PublicKey clavePublicaDestino = clavesDestino.getPublic();
-            byte[] origenOfuscado = CryptoUtil.cifrar(origen.getBytes(StandardCharsets.UTF_8), clavePublicaDestino);
+            PrivateKey clavePrivadaDestino = clavesDestino.getPrivate();
 
-            Mensaje mensaje = new Mensaje(texto, clavePublicaDestino, origenOfuscado);
+            // --- 6. Encriptar mensaje y origen ---
+            byte[] origenOfuscado = cryptoUtil.cifrar(origen.getBytes(), clavePublicaDestino);
+            byte[] contenidoCifrado = cryptoUtil.cifrar(textoPlano.getBytes(), clavePublicaDestino);
 
-            // 8. Ruta y simulación de envío
+            IMensaje mensaje = new Mensaje("");
+            mensaje.setContenidoCifrado(contenidoCifrado);
+            mensaje.setOrigenOfuscado(origenOfuscado);
+
+            // --- 7. Ejecutar Dijkstra ---
             Map<String, String> predecesores = new HashMap<>();
             Map<String, Integer> distancias = grafo.dijkstra(origen, predecesores);
             List<String> camino = grafo.reconstruirCamino(destino, predecesores);
@@ -93,21 +87,42 @@ public class Main {
                 return;
             }
 
-            System.out.println("Camino oculto (en tránsito):");
-
+            // --- 8. Mostrar resultados ---
+            System.out.println("\nCamino oculto (en tránsito):");
             System.out.println("[Transmisión segura en curso...]");
 
-            //Debug opcional solo al final
-            System.out.println("Camino más corto revelado: " + String.join(" -> ", camino));
+            System.out.println("\nCamino más corto revelado (con fines de debug): " + String.join(" -> ", camino));
             System.out.println("Distancia total: " + distancias.get(destino));
 
-            System.out.println("Mensaje cifrado: " + Base64.getEncoder().encodeToString(mensaje.getContenidoCifrado()));
-            System.out.println("Mensaje original (revelado solo por destino): " + texto);
+            String mensajeCifradoStr = Base64.getEncoder().encodeToString(mensaje.getContenidoCifrado());
+            String mensajeOriginal = new String(cryptoUtil.descifrar(mensaje.getContenidoCifrado(), clavePrivadaDestino));
+
+            System.out.println("\nMensaje cifrado: " + mensajeCifradoStr);
+            System.out.println("Mensaje original (revelado solo por destino): " + mensajeOriginal);
 
         } catch (Exception e) {
-            System.err.println("Error al cifrar el mensaje:");
+            System.err.println("Error en el proceso de cifrado o transmisión.");
             e.printStackTrace();
         }
+    }
+
+    public static List<String> generarNombresDeNodos(Scanner scanner) {
+        List<String> nodos = new ArrayList<>();
+
+        System.out.print("Ingrese la cantidad de nodos: ");
+        int cantidadNodos = scanner.nextInt();
+        scanner.nextLine();
+
+        if (cantidadNodos < 2) {
+            System.out.println("Debe haber al menos 2 nodos.");
+            return Collections.emptyList();
+        }
+
+        for (int i = 0; i < cantidadNodos; i++) {
+            nodos.add(convertirIndiceANombre(i));
+        }
+
+        return nodos;
     }
 
     private static String convertirIndiceANombre(int indice) {
