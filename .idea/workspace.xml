@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="48a44ae9-32be-4325-a859-58fae8f35b95" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/test/TestMensaje.java" afterDir="false" />
+    <list default="true" id="48a44ae9-32be-4325-a859-58fae8f35b95" name="Changes" comment="Main completo">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/App/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/interfaces/IMensaje.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/interfaces/IMensaje.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/modelo/Mensaje.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/modelo/Mensaje.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -26,7 +24,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -40,11 +37,15 @@
     &quot;accountId&quot;: &quot;d4cfab82-a8dd-48fe-9578-4b11b5672261&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2ykNnOZXvgyeqMGc9r8HxeKorB1" />
   <component name="ProjectLevelVcsManager">
+    <OptionsSetting value="false" id="Update" />
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
@@ -54,6 +55,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.Main.executor": "Run",
+    "Application.TestAlgoritmo.executor": "Run",
     "Application.TestMensaje.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -102,11 +104,36 @@
       <option name="presentableId" value="Default" />
       <updated>1750374778209</updated>
       <workItem from="1750977953188" duration="159000" />
-      <workItem from="1750978135204" duration="3402000" />
+      <workItem from="1750978135204" duration="9715000" />
     </task>
+    <task id="LOCAL-00001" summary="commit mensaje, Imensaje, TestMensaje, y tu abuela tio OSTIA">
+      <option name="closed" value="true" />
+      <created>1750981786020</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1750981786020</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="commit mensaje, Imensaje, TestMensaje, y tu abuela tio OSTIA" />
+    <MESSAGE value="Main completo" />
+    <option name="LAST_COMMIT_MESSAGE" value="Main completo" />
   </component>
 </project>
