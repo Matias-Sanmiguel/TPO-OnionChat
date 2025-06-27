@@ -1,1 +1,1 @@
-# TPO-OnionChat
+JRE 24 Required
