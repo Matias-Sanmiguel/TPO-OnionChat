@@ -1,6 +1,8 @@
 package modelo;
 
 import interfaces.IMensaje;
+
+import java.security.PublicKey;
 import java.util.List;
 
 public class Mensaje implements IMensaje {
@@ -51,5 +53,9 @@ public class Mensaje implements IMensaje {
     @Override
     public void setCapasCifradas(List<byte[]> capasCifradas) {
         this.capasCifradas = capasCifradas;
+    }
+    public Mensaje(String textoPlano, PublicKey clavePublicaDestino, byte[] origenOfuscado) throws Exception {
+        this.contenidoCifrado = CryptoUtil.cifrar(textoPlano.getBytes(), clavePublicaDestino);
+        this.origenOfuscado = origenOfuscado;
     }
 }
